@@ -44,15 +44,15 @@ userCtlr.login = async (req, res) => {
     const body = req.body;
     const {error, value } = userLoginSchema.validate(body, {abortEarly: false});
     if(error){
-        return res.status(400).json({message: error.details})
+        return res.status(400).json({error: error.details})
     }
     const user = await User.findOne({email: value.email});
     if(!user){
-        return res.status(401).json({error: 'Invalid email / password'});
+        return res.status(401).json({error: 'Invalid Email'});
     }
     const passwordMatch = await bcryptjs.compare(value.password, user.password);
     if(!passwordMatch){
-        return res.status(401).json({error: 'Invalid email / password'})
+        return res.status(401).json({error: 'Invalid Password'})
     }
     //await User.findByIdAndUpdate(user._id, { $inc: {clickCount: 1 }})
     const tokenData = {userId: user._id, role: user.role};

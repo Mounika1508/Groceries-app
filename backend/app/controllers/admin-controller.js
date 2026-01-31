@@ -1,4 +1,5 @@
 const Vendor = require("../models/vendor-model");
+const { error } = require("../validations/vendor-validation");
 
 const adminCtlr= {};
 
@@ -7,14 +8,14 @@ adminCtlr.approveVendor = async (req, res) => {
         const vendorId = req.params.vendorId;
         const vendor = await Vendor.findById(vendorId);
         if(!vendor){
-            return res.status(404).json({message: "Vendor not found"});
+            return res.status(404).json({error: "Vendor not found"});
         }   
         if(vendor.isApproved){
-            return  res.status(400).json({message: "Vendor is already approved"});
+            return  res.status(400).json({error: "Vendor is already approved"});
         }   
         vendor.isApproved = true;
         await vendor.save();
-        res.json({message: `Vendor approved successfully`});
+        res.json({error: `Vendor approved successfully`});
     }catch(err){
         console.log(err);
         res.status(500).json({error: "Something went wrong"})
@@ -26,9 +27,9 @@ adminCtlr.rejectVendor = async (req, res) => {
         const vendorId = req.params.vendorId;   
         const vendor = await Vendor.findByIdAndDelete(vendorId);
         if(!vendor){
-            return res.status(404).json({message: "Vendor not found"});
+            return res.status(404).json({error: "Vendor not found"});
         }
-        res.json({message: "Vendor rejected and removed successfully"});
+        res.json({error: "Vendor rejected and removed successfully"});
     }catch(err){
         console.log(err);
         res.status(500).json({error: "Something went wrong"})

@@ -3,7 +3,7 @@ const Customer = require('../models/customer-model');
 const Cart = require('../models/cart-model');
 const Vendor = require('../models/vendor-model');
 const DeliveryBoy = require("../models/deliveryBoy-model");
-const { sendSMS } = require('../utils/sms');
+const { sendSMS } = require('../../utils/sms');
 const orderCtlr = {};
 // Place a new order
 orderCtlr.placeOrder = async (req, res) => {

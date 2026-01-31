@@ -7,7 +7,7 @@ vendorCtlr.create = async (req, res) => {
         const body = req.body;  
         const userId = req.userId;
         if(req.role !== 'vendor'){
-            return res.status(403).json({message: "Only vendors can create vendor profiles"});
+            return res.status(403).json({error: "Only vendors can create vendor profiles"});
         }           
         const {error, value} = vendorValidationSchema.validate(body, {abortEarly: false});
         if(error){
@@ -15,14 +15,14 @@ vendorCtlr.create = async (req, res) => {
         }   
         const existingVendor = await Vendor.findOne({userId});
         if(existingVendor){
-            return res.status(400).json({message: "Vendor profile already exists for this user"});
+            return res.status(400).json({error: "Vendor profile already exists for this user"});
         }   
         const vendor = await Vendor.create({        
             userId, 
             shopName: value.shopName,
             phone: value.phone,
             address: value.address, 
-            city: value.cit
+            city: value.city
         });
         const populatedVendor = await Vendor.findById(vendor._id).populate('userId', '_id username ');
         res.status(201).json(populatedVendor);

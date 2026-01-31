@@ -1,5 +1,7 @@
 const Category = require("../models/category-model");
 const Vendor = require("../models/vendor-model");
+const cloudinary = require("../middlewares/cloudinary");
+const fs = require("fs");
 const categoryValidationSchema = require("../validations/category-validation");
 const categoryCtlr = {};        
 //creating category
@@ -22,9 +24,21 @@ categoryCtlr.create = async (req, res) => {
         if(existingCategory){
             return res.status(400).json({message: "Category with this name already exists"});
         }   
+        let imageUrl = "";
+        let publicId = "";
+        if(req.file){
+            const result = await cloudinary.uploader.upload(req.file.path, {
+            folder: 'categories'
+        });
+        fs.unlinkSync(req.file.path); // Remove file from server after upload
+        imageUrl = result.secure_url;
+        publicId = result.public_id;
+        }  
+        
         const category = await Category.create({        
             name: value.name,     
-            imageUrl: value.imageUrl,
+            imageUrl: imageUrl,
+            publicId: publicId,
             vendorId: vendor._id
         }); 
         res.status(201).json(category); 

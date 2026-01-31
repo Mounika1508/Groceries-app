@@ -1,4 +1,5 @@
 require('dotenv').config();
+const upload = require("./app/middlewares/multer");
 const express = require('express');
 const cors = require('cors');
 const app = express();
@@ -57,7 +58,7 @@ app.get('/deliveryboy/myOrders', authenticateUser, authorizeUser(['deliveryboy']
 app.get('/deliveryboy/account', authenticateUser, deliveryBoyCtlr.account);
 app.delete("/deliveryboys/remove/:id", authenticateUser, authorizeUser(["vendor"]), deliveryBoyCtlr.remove)
 //category
-app.post('/categories', authenticateUser, authorizeUser(['vendor']), categoryCtlr.create);
+app.post('/categories', authenticateUser, authorizeUser(['vendor']), upload.single('image'), categoryCtlr.create);
 app.get('/categories/list', authenticateUser, authorizeUser(['vendor']), categoryCtlr.list);    
 app.get('/categories/publicList/:vendorId', categoryCtlr.publicList);
 app.put('/categories/update/:id', authenticateUser, authorizeUser(['vendor']), categoryCtlr.update);

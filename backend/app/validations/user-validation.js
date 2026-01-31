@@ -1,6 +1,6 @@
 const Joi = require('joi');
 const userRegisterSchema = Joi.object({
-    username: Joi.string().trim().required().min(4).max(64),
+    username: Joi.string().trim().required().min(3).max(64),
     email: Joi.string().trim().email().required(),
     password: Joi.string().trim().required().min(8).max(128),
     role: Joi.string().required() 
