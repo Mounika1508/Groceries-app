@@ -1,5 +1,5 @@
 const Vendor = require("../models/vendor-model");
-const { error } = require("../validations/vendor-validation");
+const vendorValidationSchema = require("../validations/vendor-validation");
 
 const adminCtlr= {};
 

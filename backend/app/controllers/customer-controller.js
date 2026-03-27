@@ -8,7 +8,7 @@ customerCtlr.create = async (req, res) => {
         const body = req.body;
         const userId = req.userId;
         if(req.role !== 'customer'){
-            return res.status(403).json({message: "Only customers can create customer profiles"});
+            return res.status(403).json({TypeError: "Only customers can create customer profiles"});
         }
         const {error, value} = customerValidationSchema.validate(body, {abortEarly: false});
         if(error){
@@ -16,15 +16,15 @@ customerCtlr.create = async (req, res) => {
         }
         const existingCustomer = await Customer.findOne({userId});
         if(existingCustomer){
-            return res.status(400).json({message: "Customer profile already exists for this user"});
+            return res.status(400).json({error: "Customer profile already exists for this user"});
         }
         const user = await User.findById(userId);
         if(!user){
-            return res.status(404).json({message: "User not found"});
+            return res.status(404).json({error: "User not found"});
         }
         const existingEmailCustomer = await Customer.findOne({email: user.email});
         if(existingEmailCustomer){
-            return res.status(400).json({message: "Customer profile with this email already exists"});
+            return res.status(400).json({error: "Customer profile with this email already exists"});
         }
         const customer = await Customer.create({
             userId,
@@ -47,7 +47,7 @@ customerCtlr.getProfile = async (req, res) => {
         const userId = req.userId;  
         const customer = await Customer.findOne({userId});
         if(!customer){
-            return res.status(404).json({message: "Customer profile not found"});
+            return res.status(404).json({error: "Customer profile not found"});
         }       
         res.json(customer); 
     }catch(err){
@@ -69,11 +69,11 @@ customerCtlr.list = async (req, res) => {
 customerCtlr.remove = async (req, res) => {
     try{
         const id = req.params.id;
-        const customer = await Customer.findOneAndDelete({_id: id});
+        const customer = await Customer.findOneAndDelete({_id: id, userId: req.userId});
         if(!customer){
-            return res.status(404).json({message: "Customer not found"});
+            return res.status(404).json({error: "Customer not found"});
         }
-        res.json({message:`${customer.username} deleted successfully`})
+        res.json({ error :`${customer.username} deleted successfully`})
     }catch(err){
         console.log(err);
         res.status(500).json({error: err.message});
@@ -85,7 +85,7 @@ customerCtlr.show = async (req, res) => {
         const id = req.params.id;
         const customer = await Customer.findById(id);
         if(!customer){
-            return res.status(404).json({message: "Customer not found"});
+            return res.status(404).json({error: "Customer not found"});
         }   
         res.json(customer);
     }catch(err){        
@@ -104,7 +104,7 @@ customerCtlr.update = async (req, res) => {
         }   
         const updatedCustomer = await Customer.findOneAndUpdate({_id: id, userId: req.userId}, value, {new: true});
         if(!updatedCustomer){
-            return res.status(404).json({message: "Customer not found"});
+            return res.status(404).json({error: "Customer not found"});
         }   
         res.json(updatedCustomer);
     }catch(err){

@@ -3,8 +3,10 @@ const ProductSchema = new mongoose.Schema({
     name: { type: String, required: true }, 
     description: { type: String, default: "" },
     price: { type: Number, required: true },
-    imageUrl: { type: String, default: "" },
-    stock: { type: Number, default: 0 },
+    netQnty: { type: String},
+    image: { type: String, default: "" },
+    publicId: { type: String, default: "" },
+    stock: { type: Number },
     categoryId: { type: mongoose.Schema.Types.ObjectId, ref: "Category", required: true },  
     vendorId: { type: mongoose.Schema.Types.ObjectId, ref: "Vendor" }
 }, {timestamps: true}); 

@@ -23,6 +23,7 @@ const categoryCtlr = require('./app/controllers/category-controller.js');
 const productCtlr = require('./app/controllers/product-controller.js');
 const cartCtlr = require('./app/controllers/cart-controller.js');
 const orderCtlr = require('./app/controllers/order-controller.js');
+const paymentCtlr = require('./app/controllers/payment-controller');
 //public route
 app.post('/users/register', userCtlr.register);
 app.post('/users/login', userCtlr.login)
@@ -39,37 +40,38 @@ app.get("/admin/pendingVendors", authenticateUser, authorizeUser(["admin"]), adm
 app.post('/customer', authenticateUser, authorizeUser(['customer']), customerCtlr.create);
 app.get('/customer/profile', authenticateUser, authorizeUser(['customer']), customerCtlr.getProfile); 
 app.get('/customers/list', authenticateUser, authorizeUser(['admin']), customerCtlr.list);  
-app.delete('/customers/remove/:id', authenticateUser, authorizeUser(['admin']), customerCtlr.remove);
+app.delete('/customer/remove/:id', authenticateUser, authorizeUser(['admin']), customerCtlr.remove);
 app.get('/customers/:id', authenticateUser, authorizeUser(['admin']), customerCtlr.show);
 app.put('/customer/update/:id', authenticateUser, authorizeUser(['customer']), customerCtlr.update);
 //vendor
-app.post('/vendor', authenticateUser, authorizeUser(['vendor']), vendorCtlr.create);
-app.get("/vendors/list", authenticateUser, authorizeUser(["admin"]), vendorCtlr.list);
+app.post('/vendor', authenticateUser, authorizeUser(['vendor']), upload.single('image'), vendorCtlr.create);
+app.get("/vendors/list", authenticateUser, authorizeUser(["admin", "customer"]), vendorCtlr.list);
+app.get("/vendors/profile/:id", authenticateUser, authorizeUser(["vendor", "admin"]), vendorCtlr.show);
 app.get("/vendors/pendingList", authenticateUser, authorizeUser(["admin"]), vendorCtlr.pendingList);
 app.put("/vendors/update/:id", authenticateUser, authorizeUser(["vendor"]), vendorCtlr.update);
+app.get('/vendors/myProfile', authenticateUser, authorizeUser(["vendor"]), vendorCtlr.myProfile);
 app.delete("/vendors/remove/:id", authenticateUser, authorizeUser(["admin"]), vendorCtlr.remove)
 //deliveryBoy
 app.post('/deliveryboy', authenticateUser, authorizeUser(['deliveryboy']), deliveryBoyCtlr.create);
-app.get('/deliveryboys/availableList', authenticateUser, authorizeUser(['vendor']), deliveryBoyCtlr.listavailable);
+app.get('/deliveryboys/availableList', authenticateUser, authorizeUser(['vendor']), deliveryBoyCtlr.listAvailable);
 app.get('/deliveryboy/myOrders', authenticateUser, authorizeUser(['deliveryboy']), deliveryBoyCtlr.myOrders);
-//app.post('/deliveryboys/assignVendor/:id', authenticateUser, authorizeUser(['vendor']), deliveryBoyCtlr.assignVendor);
-///app.get('/deliveryboys/list', authenticateUser, authorizeUser(['vendor']), deliveryBoyCtlr.list);
-// app.get("/deliveryboys/list", authenticateUser, authorizeUser(["vendor"]), deliveryBoyCtlr.list);
-app.get('/deliveryboy/account', authenticateUser, deliveryBoyCtlr.account);
-app.delete("/deliveryboys/remove/:id", authenticateUser, authorizeUser(["vendor"]), deliveryBoyCtlr.remove)
+app.get('/deliveryboy/account', authenticateUser, authorizeUser(['deliveryboy']), deliveryBoyCtlr.account);
+app.put("/deliveryboy/toggle", authenticateUser, authorizeUser(["deliveryboy"]), deliveryBoyCtlr.toggleAvailability);
+app.put("/deliveryboy/update", authenticateUser, authorizeUser(["deliveryboy"]), deliveryBoyCtlr.update);
+app.delete("/deliveryboy/remove", authenticateUser, authorizeUser(["deliveryboy"]), deliveryBoyCtlr.remove)
 //category
 app.post('/categories', authenticateUser, authorizeUser(['vendor']), upload.single('image'), categoryCtlr.create);
 app.get('/categories/list', authenticateUser, authorizeUser(['vendor']), categoryCtlr.list);    
 app.get('/categories/publicList/:vendorId', categoryCtlr.publicList);
-app.put('/categories/update/:id', authenticateUser, authorizeUser(['vendor']), categoryCtlr.update);
+app.put('/categories/update/:id', authenticateUser, authorizeUser(['vendor']), upload.single('image'), categoryCtlr.update);
 app.delete('/categories/remove/:id', authenticateUser, authorizeUser(['vendor']), categoryCtlr.remove);
 //product
-app.post('/products', authenticateUser, authorizeUser(['vendor']), productCtlr.create);
+app.post('/products', authenticateUser, authorizeUser(['vendor']), upload.single('image'), productCtlr.create);
 app.get('/products/vendorList', authenticateUser, authorizeUser(['vendor']), productCtlr.listByVendor);
 app.get('/products/publicList', productCtlr.publicList);
 app.put('/products/update/:id', authenticateUser, authorizeUser(['vendor']), productCtlr.update);
 app.delete('/products/remove/:id', authenticateUser, authorizeUser(['vendor']), productCtlr.remove);
-//cart
+//cart 
 app.post('/cart/addItem', authenticateUser, authorizeUser(['customer']), cartCtlr.addItem);
 app.get('/cart/view', authenticateUser, authorizeUser(['customer']), cartCtlr.viewCart);
 app.put('/cart/updateItem/:productId', authenticateUser, authorizeUser(['customer']), cartCtlr.updateItem);
@@ -77,10 +79,16 @@ app.delete('/cart/removeItem/:productId', authenticateUser, authorizeUser(['cust
 //order
 app.post('/orders/placeOrder', authenticateUser, authorizeUser(['customer']), orderCtlr.placeOrder);
 app.get('/orders/myOrders', authenticateUser, authorizeUser(['customer']), orderCtlr.getMyOrders);
+app.get('/orders/vendorOrders', authenticateUser, authorizeUser(['vendor']), orderCtlr.getVendorOrders);  
+app.get("/orders/adminOrders", authenticateUser, authorizeUser(["admin"]), orderCtlr.adminOrders); 
 app.delete('/orders/cancelOrder/:id', authenticateUser, authorizeUser(['customer']), orderCtlr.cancelOrder);
 app.put('/orders/startPacking/:id', authenticateUser, authorizeUser(['vendor']), orderCtlr.startPacking);
 app.put('/orders/assignDeliveryBoy/:id', authenticateUser, authorizeUser(['vendor']), orderCtlr.assignDeliveryBoy); 
 app.put('/orders/markAsDelivered/:id', authenticateUser, authorizeUser(['deliveryboy']), orderCtlr.markAsDelivered);
+
+// Payments (Razorpay)
+app.post('/payments/createOrder', authenticateUser, authorizeUser(['customer']), paymentCtlr.createOrder);
+app.post('/payments/verify', paymentCtlr.verifyPayment);
 
 app.listen(port, () => {
     console.log('server is running on port', port);

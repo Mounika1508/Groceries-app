@@ -6,7 +6,8 @@ const vendorSchema = new mongoose.Schema({
     phone: {type: String, required: true},      
     address: {type: String, required: true},
     city: {type: String, required: true},
-    imageUrl: {type: String, default: ''},
+    image: {type: String, default: ''},
+    publicId: {type: String, default: ''},
     createdAt: {type: Date, default: Date.now},
     isApproved: {type: Boolean, default: false},        
 });

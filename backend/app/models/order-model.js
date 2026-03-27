@@ -7,7 +7,12 @@ const OrderSchema = new mongoose.Schema({
         quantity: { type: Number, required: true },
         price: { type: Number, required: true }
     }],
+    subtotal: { type: Number, required: true },
+    deliveryFee: { type: Number, required: true },
     totalAmount: { type: Number, required: true },
+    paymentMethod: { type: String, enum: ["cod","online", "UPI"], default: "cod" },
+    paymentInfo: { type: Object, default: null },
+    deliveredAt: { type: Date },
     status: { type: String, enum: ["placed", "packing", "on-the-way", "delivered", "cancelled"], default: "placed" },
     deliveryBoyId: { type: mongoose.Schema.Types.ObjectId, ref: "DeliveryBoy", default: null }
 }, {timestamps: true}); 

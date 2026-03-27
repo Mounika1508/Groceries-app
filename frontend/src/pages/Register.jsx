@@ -109,7 +109,7 @@ export default function Register(props) {
                         <option value="customer">Customer</option>
                         <option value="vendor">Vendor</option>
                         <option value="admin">Admin</option>
-                        <option value="deliveryBoy">Delivery Boy</option>
+                        <option value="deliveryboy">Delivery Boy</option>
                     </select>
                     {formik.touched.role && formik.errors.role && (<p style={{ color: "red", fontSize: "15px", margin: "0" }}>{formik.errors.role}</p>)}
 
