@@ -43,9 +43,7 @@ exports.verifyPayment = async (req, res) => {
       .digest('hex');
 
     if (expectedSignature === razorpay_signature) {
-      // Signature valid. Optionally update your DB order here.
-      // Example (if you stored a local order by receipt or razorpay_order_id):
-      // await OrderModel.findOneAndUpdate({ razorpayOrderId: razorpay_order_id }, { paid: true, razorpayPaymentId: razorpay_payment_id });
+     
 
       return res.json({
         success: true,
